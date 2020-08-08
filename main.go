@@ -11,7 +11,9 @@ func main() {
 	app := fiber.New()
 
 	// Static file server
-	app.Static("/", "./files")
+	app.Static("/", "./files", fiber.Static{
+		ByteRange: true,
+	})
 
 	log.Fatal(app.Listen(3000))
 }
