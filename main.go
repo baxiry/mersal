@@ -28,6 +28,8 @@ func (topics Topics) Subscribe(top string, subs Subscribers, cli Client) {
 
 func main() {
 
+	os.Exit(0)
+
 	var topics = Topics{}
 	var subs = Subscribers{}
 	var cli Client
@@ -44,28 +46,37 @@ func main() {
 	}
 	defer file.Close()
 
-	/*
-		for topic, subs := range topics {
-			fmt.Println()
-			fmt.Print("\n", topic, "\t")
-
-			for k, v := range subs {
-				fmt.Print(" ", k, v)
-			}
-		}
-	*/
-
 	jsondata, err := json.Marshal(topics)
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	}
-	err = ioutil.WriteFile("temp.txt", []byte(jsondata), 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	fmt.Println(" Done")
 
+	Updatefile("temp.txt", jsondata)
+
 	//pull := map[string]bool{}
 	//msg := Msg{"ahmed", "d7ome", "hello my frend"}
+}
+
+// createTopic create new topic id topic from clients ids
+func CreateTopic(id1, id2 string) (topic string) {
+
+	for i := 0; i < len(id1); i++ {
+		if id1[i] > id2[i] {
+			topic += string(id1[i]) + string(id2[i])
+		} else {
+			topic += string(id2[i]) + string(id1[i])
+		}
+	}
+	return topic
+}
+
+// update file updates jsondata condtent file
+func Updatefile(filePath string, jsondata []byte) error {
+	err := ioutil.WriteFile("temp.txt", jsondata, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }
