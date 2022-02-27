@@ -9,36 +9,37 @@ import (
 	"strconv"
 )
 
-type Msg struct {
-	From string
-	To   string
-	Msg  string
-}
-
-type Client string
-
-type Topics map[string]Subscribers
+type Client string // will be websocket.Client
 
 type Subscribers map[Client]bool
 
-func (topics Topics) Subscribe(top string, subs Subscribers, cli Client) {
-	subs[cli] = true
-	topics[top] = subs
+type Topics map[string]Subscribers
+
+// Subscribe adds new client to topic
+// if topic is not exist then Subscribe create new
+func (topics Topics) Subscribe(top string, cli Client) {
+	if topics[top] == nil {
+		topics[top] = Subscribers{}
+	}
+	//subs[cli] = true
+	topics[top][cli] = true
 }
 
+//func (topics Topics) Unsub
 func main() {
 
-	os.Exit(0)
-
 	var topics = Topics{}
-	var subs = Subscribers{}
 	var cli Client
+	//var subs = Subscribers{}
 
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 10000; i++ {
 		topic := "topic-" + strconv.Itoa(i)
 		cli = "client-" + Client(strconv.Itoa(i))
-		topics.Subscribe(topic, subs, cli)
+		topics.Subscribe(topic, cli)
 	}
+
+	os.Exit(0)
+	// ---------------------
 
 	file, err := os.Create("./test.txt")
 	if err != nil {
@@ -79,4 +80,11 @@ func Updatefile(filePath string, jsondata []byte) error {
 		return err
 	}
 	return nil
+}
+
+// Msg message type for testing
+type Msg struct {
+	From string
+	To   string
+	Msg  string
 }
