@@ -4,10 +4,6 @@ import (
 	"testing"
 )
 
-type args struct {
-	arg1, arg2, result string
-}
-
 // test Topics.Subscribe() method
 func TestSubscribe(t *testing.T) {
 

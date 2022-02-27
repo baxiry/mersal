@@ -4,50 +4,57 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strconv"
 )
 
 type Client string // will be websocket.Client
 
-type Subscribers map[Client]bool
+//type Subscribers map[Client]bool
 
-type Topics map[string]Subscribers
+type Hub struct {
+	//mt     sync.Mutex
+	Subscribers map[Client]bool
+	Topics      map[string]map[Client]bool
+}
 
 // Subscribe adds new client to topic
 // if topic is not exist then Subscribe create new
-func (topics Topics) Subscribe(top string, cli Client) {
-	if topics[top] == nil {
-		topics[top] = Subscribers{}
+func (h Hub) Subscribe(top string, cli Client) {
+
+	h.Subscribers[cli] = true
+	h.Topics[top] = h.Subscribers
+}
+func newHub() *Hub {
+	return &Hub{
+		Subscribers: make(map[Client]bool),
+		Topics:      make(map[string]map[Client]bool, 1),
 	}
-	//subs[cli] = true
-	topics[top][cli] = true
 }
 
 //func (topics Topics) Unsub
 func main() {
+	hub := newHub()
 
-	var topics = Topics{}
-	var cli Client
-	//var subs = Subscribers{}
-
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 5; i++ {
 		topic := "topic-" + strconv.Itoa(i)
-		cli = "client-" + Client(strconv.Itoa(i))
-		topics.Subscribe(topic, cli)
+		cli := "client-" + Client(strconv.Itoa(i))
+		hub.Subscribe(topic, cli)
+	}
+
+	fmt.Println(len(hub.Topics["topic-1"]))
+
+	for _, t := range hub.Topics {
+		fmt.Println(t)
+		for _, v := range t {
+			fmt.Println("   ", v)
+		}
 	}
 
 	os.Exit(0)
 	// ---------------------
 
-	file, err := os.Create("./test.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	jsondata, err := json.Marshal(topics)
+	jsondata, err := json.Marshal(hub)
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	}
