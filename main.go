@@ -1,97 +1,71 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"strconv"
+	"pubsub/cache"
+	"time"
+	//	"github.com/akyoto/cache"
 )
 
-type Client string // will be websocket.Client
-
-//type Subscribers map[Client]bool
-
-type Hub struct {
-	//mt     sync.Mutex
-	Subscribers map[Client]bool
-	Topics      map[string]map[Client]bool
-}
-
-// Subscribe adds new client to topic
-// if topic is not exist then Subscribe create new
-func (h Hub) Subscribe(top string, cli Client) {
-
-	h.Subscribers[cli] = true
-	h.Topics[top] = h.Subscribers
-}
-func newHub() *Hub {
-	return &Hub{
-		Subscribers: make(map[Client]bool),
-		Topics:      make(map[string]map[Client]bool, 1),
-	}
-}
+type aClient map[string]string
 
 //func (topics Topics) Unsub
 func main() {
-	hub := newHub()
 
-	for i := 0; i < 5; i++ {
-		topic := "topic-" + strconv.Itoa(i)
-		cli := "client-" + Client(strconv.Itoa(i))
-		hub.Subscribe(topic, cli)
-	}
+	client := aClient{}
+	client["hi"] = "hello"
 
-	fmt.Println(len(hub.Topics["topic-1"]))
+	// New cache
+	c := cache.New(5 * time.Minute)
 
-	for _, t := range hub.Topics {
-		fmt.Println(t)
-		for _, v := range t {
-			fmt.Println("   ", v)
-		}
-	}
+	// Put something into the cache
+	c.Set("a", client, 1*time.Minute)
+	// Read from the cache
+	obj, _ := c.Get("a")
 
-	os.Exit(0)
-	// ---------------------
+	// Convert the type
+	fmt.Println(obj)
 
-	jsondata, err := json.Marshal(hub)
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-	}
+	client["ok"] = "yes"
+	c.Set("a", client, 1*time.Minute)
+	// Read from the cache
+	obj, _ = c.Get("a")
 
-	fmt.Println(" Done")
+	fmt.Println(obj)
 
-	Updatefile("temp.txt", jsondata)
+	delete(client, "ok")
 
-	//pull := map[string]bool{}
-	//msg := Msg{"ahmed", "d7ome", "hello my frend"}
-}
+	c.Set("a", client, 1*time.Minute)
 
-// createTopic create new topic id topic from clients ids
-func CreateTopic(id1, id2 string) (topic string) {
+	obj, _ = c.Get("a")
 
-	for i := 0; i < len(id1); i++ {
-		if id1[i] > id2[i] {
-			topic += string(id1[i]) + string(id2[i])
-		} else {
-			topic += string(id2[i]) + string(id1[i])
-		}
-	}
-	return topic
-}
+	fmt.Println(obj)
 
-// update file updates jsondata condtent file
-func Updatefile(filePath string, jsondata []byte) error {
-	err := ioutil.WriteFile("temp.txt", jsondata, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+	fmt.Println("with new topic// ==========================================")
 
-// Msg message type for testing
-type Msg struct {
-	From string
-	To   string
-	Msg  string
+	client["hib"] = "hellob"
+
+	// Put something into the cache
+	c.Set("b", client, 1*time.Minute)
+	// Read from the cache
+	obj, _ = c.Get("b")
+
+	// Convert the type
+	fmt.Println(obj)
+
+	client["oks"] = "yes"
+	c.Set("b", client, 1*time.Minute)
+	// Read from the cache
+	obj, _ = c.Get("b")
+
+	fmt.Println(obj)
+
+	delete(client, "oks")
+
+	c.Set("b", client, 1*time.Minute)
+
+	obj, _ = c.Get("b")
+
+	fmt.Println(obj)
+
 }
