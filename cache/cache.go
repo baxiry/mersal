@@ -19,7 +19,7 @@ type item struct {
 
 // New creates a new cache that asynchronously cleans
 // expired entries after the given time passes.
-func New(cleaningInterval time.Duration) *Cache {
+func New() *Cache {
 	cache := &Cache{
 		close: make(chan struct{}),
 	}
@@ -69,12 +69,8 @@ func (cache *Cache) Get(key interface{}) (interface{}, bool) {
 
 // Set sets a value for the given key with an expiration duration.
 // If the duration is 0 or less, it will be stored forever.
-func (cache *Cache) Set(key interface{}, value interface{}, duration time.Duration) {
+func (cache *Cache) Set(key interface{}, value interface{}) {
 	var expires int64
-
-	if duration > 0 {
-		expires = time.Now().Add(duration).UnixNano()
-	}
 
 	cache.items.Store(key, item{
 		data:    value,
@@ -85,14 +81,14 @@ func (cache *Cache) Set(key interface{}, value interface{}, duration time.Durati
 // Range calls f sequentially for each key and value present in the cache.
 // If f returns false, range stops the iteration.
 func (cache *Cache) Range(f func(key, value interface{}) bool) {
-	now := time.Now().UnixNano()
+	//now := time.Now().UnixNano()
 
 	fn := func(key, value interface{}) bool {
 		item := value.(item)
 
-		if item.expires > 0 && now > item.expires {
-			return true
-		}
+		//if item.expires > 0 && now > item.expires {
+		//	return true
+		//}
 
 		return f(key, item.data)
 	}

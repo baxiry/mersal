@@ -1,14 +1,12 @@
 package main
 
+//type Hub struct{}
+
 type Client map[string]bool
 
-type Topics map[string]bool
-
-func (topics Topics) Join(t string, c Client) {
-	topics[t] = c
+func (h Hub) Join(t string, c Client) {
 }
 
-func (topics Topics) Delete(t, c string) {
+func (h Hub) Delete(t, c string) {
 
-	delete(topics[t], c)
 }

@@ -3,69 +3,59 @@ package main
 import (
 	"fmt"
 	"pubsub/cache"
-	"time"
+	"strconv"
 	//	"github.com/akyoto/cache"
 )
 
-type aClient map[string]string
+var c = cache.New()
 
-//func (topics Topics) Unsub
+func Subscribe(topic, client string) {
+	clients, _ := c.Get(topic)
+	if clients == nil {
+		clients = make(map[string]bool)
+	}
+	clients.(map[string]bool)[client] = true
+
+	c.Set(topic, clients)
+}
+
+func Unsubscribe(topic, client string) {
+
+	clients, _ := c.Get(topic)
+	if clients == nil {
+		return
+	}
+
+	delete(clients.(map[string]bool), client)
+	c.Set(topic, clients)
+
+}
+
+func Publishe(t string) {
+	clients, _ := c.Get(t)
+	for k := range clients.(map[string]bool) {
+
+		fmt.Println("    data sent to ", k)
+	}
+}
+
 func main() {
+	// test Subscribe
+	for i := 0; i < 10; i++ {
+		topic := "topic-" + strconv.Itoa(i)
+		for i := 0; i < 100; i++ {
+			client := "client-" + strconv.Itoa(i)
+			Subscribe(topic, client)
 
-	client := aClient{}
-	client["hi"] = "hello"
+		}
 
-	// New cache
-	c := cache.New(5 * time.Minute)
+	}
 
-	// Put something into the cache
-	c.Set("a", client, 1*time.Minute)
-	// Read from the cache
-	obj, _ := c.Get("a")
+	for i := 0; i < 10; i++ {
+		topic := "topic-" + strconv.Itoa(i)
+		fmt.Println("start Publishe to all Subscriber in", topic)
 
-	// Convert the type
-	fmt.Println(obj)
-
-	client["ok"] = "yes"
-	c.Set("a", client, 1*time.Minute)
-	// Read from the cache
-	obj, _ = c.Get("a")
-
-	fmt.Println(obj)
-
-	delete(client, "ok")
-
-	c.Set("a", client, 1*time.Minute)
-
-	obj, _ = c.Get("a")
-
-	fmt.Println(obj)
-
-	fmt.Println("with new topic// ==========================================")
-
-	client["hib"] = "hellob"
-
-	// Put something into the cache
-	c.Set("b", client, 1*time.Minute)
-	// Read from the cache
-	obj, _ = c.Get("b")
-
-	// Convert the type
-	fmt.Println(obj)
-
-	client["oks"] = "yes"
-	c.Set("b", client, 1*time.Minute)
-	// Read from the cache
-	obj, _ = c.Get("b")
-
-	fmt.Println(obj)
-
-	delete(client, "oks")
-
-	c.Set("b", client, 1*time.Minute)
-
-	obj, _ = c.Get("b")
-
-	fmt.Println(obj)
+		Publishe(topic)
+	}
 
 }
