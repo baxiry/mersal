@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -16,39 +15,38 @@ type Cache struct {
 
 // An item represents arbitrary data with expiration time.
 type item struct {
-	data    interface{}
-	expires int64
+	data interface{}
 }
 
-// New creates a new cache that asynchronously cleans
-// expired entries after the given time passes.
+// New creates a new cache  ( that asynchronously cleans
+// expired entries after the given time passes.)
 func NewCache() *Cache {
 	cache := &Cache{
 		close: make(chan struct{}),
 	}
 
-	go func() {
-		//ticker := time.NewTicker(cleaningInterval)
-		//defer ticker.Stop()
+	//go func() {
+	//ticker := time.NewTicker(cleaningInterval)
+	//defer ticker.Stop()
 
-		for {
-			//select {
-			//	case <-ticker.C:
-			//now := time.Now().UnixNano()
+	//for {
+	//select {
+	//	case <-ticker.C:
+	//now := time.Now().UnixNano()
 
-			cache.items.Range(func(key, value interface{}) bool {
-				//item := value.(item)
+	//cache.items.Range(func(key, value interface{}) bool {
+	//item := value.(item)
 
-				//if item.expires > 0 && now > item.expires {	cache.items.Delete(key)}
+	//if item.expires > 0 && now > item.expires {	cache.items.Delete(key)}
 
-				return true
-			})
+	//	return true
+	//})
 
-			//case <-cache.close:
-			//	return
-		}
-		//}
-	}()
+	//	case <-cache.close:
+	//	return
+	//	}
+	//}
+	//	}()
 
 	return cache
 }
@@ -63,9 +61,9 @@ func (cache *Cache) Get(key interface{}) (interface{}, bool) {
 
 	item := obj.(item)
 
-	if item.expires > 0 && time.Now().UnixNano() > item.expires {
-		return nil, false
-	}
+	//if item.expires > 0 && time.Now().UnixNano() > item.expires {
+	//	return nil, false
+	//}
 
 	return item.data, true
 }
@@ -73,11 +71,9 @@ func (cache *Cache) Get(key interface{}) (interface{}, bool) {
 // Set sets a value for the given key with an expiration duration.
 // If the duration is 0 or less, it will be stored forever.
 func (cache *Cache) Set(key interface{}, value interface{}) {
-	var expires int64
 
 	cache.items.Store(key, item{
-		data:    value,
-		expires: expires,
+		data: value,
 	})
 }
 
@@ -115,7 +111,7 @@ func (cache *Cache) Close() {
 //var c = cache.New()
 var c = NewCache()
 
-func Subscribe(topic, client *websocket.Conn) {
+func Subscribe(topic string, client *websocket.Conn) {
 	clients, _ := c.Get(topic)
 	if clients == nil {
 		clients = make(map[*websocket.Conn]bool)
@@ -123,9 +119,10 @@ func Subscribe(topic, client *websocket.Conn) {
 	clients.(map[*websocket.Conn]bool)[client] = true
 
 	c.Set(topic, clients)
+	fmt.Println(client)
 }
 
-func Unsubscribe(topic, client *websocket.Conn) {
+func Unsubscribe(topic string, client *websocket.Conn) {
 
 	clients, _ := c.Get(topic)
 	if clients == nil {
@@ -134,14 +131,18 @@ func Unsubscribe(topic, client *websocket.Conn) {
 
 	delete(clients.(map[*websocket.Conn]bool), client)
 	c.Set(topic, clients)
+	fmt.Println(client)
 
 }
 
-func Publishe(t string) {
-	clients, _ := c.Get(t)
-	for k := range clients.(map[string]bool) {
+func Publishe(i int, topic string, data []byte) {
+	clients, _ := c.Get(topic)
+	for c := range clients.(map[*websocket.Conn]bool) {
 
-		fmt.Println("    data sent to ", k)
+		if err := c.WriteMessage(i, data); err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("    data sent to ", c.LocalAddr())
 	}
 }
 
