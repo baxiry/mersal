@@ -2,60 +2,73 @@ package main
 
 import (
 	"fmt"
-	"pubsub/cache"
-	"strconv"
-	//	"github.com/akyoto/cache"
+	"io/ioutil"
+	"net/http"
+
+	"github.com/gorilla/websocket"
+	"github.com/tidwall/gjson"
 )
 
-var c = cache.New()
-
-func Subscribe(topic, client string) {
-	clients, _ := c.Get(topic)
-	if clients == nil {
-		clients = make(map[string]bool)
-	}
-	clients.(map[string]bool)[client] = true
-
-	c.Set(topic, clients)
+type msg struct {
+	Num int
 }
 
-func Unsubscribe(topic, client string) {
-
-	clients, _ := c.Get(topic)
-	if clients == nil {
-		return
+func wsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("Origin") != "http://"+r.Host {
+		//http.Error(w, "Origin not allowed", 403)
+		//return
 	}
-
-	delete(clients.(map[string]bool), client)
-	c.Set(topic, clients)
-
+	conn, err := websocket.Upgrade(w, r, w.Header(), 512, 512) //1024, 1024)
+	if err != nil {
+		http.Error(w, "Could not open websocket connection", 404)
+	}
+	go echo(conn)
 }
 
-func Publishe(t string) {
-	clients, _ := c.Get(t)
-	for k := range clients.(map[string]bool) {
+func echo(conn *websocket.Conn) {
 
-		fmt.Println("    data sent to ", k)
+	// TODO use pubsub here
+
+	for {
+
+		fmt.Printf("%s\n", conn.RemoteAddr().String())
+		i, msg, err := conn.ReadMessage()
+		if err != nil {
+			fmt.Println("Error reading message no.", i)
+			conn.Close()
+			return
+		}
+		// subscribe if event == subscribe
+		jmsg := gjson.Get(string(msg), "event")
+		if jmsg.String() == "subscribe" {
+
+			fmt.Println("new subscriber")
+
+			//Subscribe("channel", "adam")
+			continue
+		}
+
+		fmt.Printf("Got message: %#v\n", string(msg))
+
+		if err = conn.WriteMessage(i, msg); err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
 func main() {
-	// test Subscribe
-	for i := 0; i < 10; i++ {
-		topic := "topic-" + strconv.Itoa(i)
-		for i := 0; i < 100; i++ {
-			client := "client-" + strconv.Itoa(i)
-			Subscribe(topic, client)
+	http.HandleFunc("/ws", wsHandler)
 
-		}
+	panic(http.ListenAndServe(":8080", nil))
+}
 
+// ---------------------------------------------------------
+
+//http.HandleFunc("/", rootHandler)
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	content, err := ioutil.ReadFile("index.html")
+	if err != nil {
+		fmt.Println("Could not open file.", err)
 	}
-
-	for i := 0; i < 10; i++ {
-		topic := "topic-" + strconv.Itoa(i)
-		fmt.Println("start Publishe to all Subscriber in", topic)
-
-		Publishe(topic)
-	}
-
+	fmt.Fprintf(w, "%s", content)
 }

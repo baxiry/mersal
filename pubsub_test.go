@@ -32,33 +32,25 @@ func TestCreateTopic(t *testing.T) {
 }
 
 func BenchmarkSubscribe(b *testing.B) {
-	hub := newHub()
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for i := 0; i < b.N/2; i++ {
-			topic := "topic-" + strconv.Itoa(i)
-			cli := "client-" + Client(strconv.Itoa(i))
-			hub.Subscribe(topic, cli)
-		}
-	}()
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for i := b.N / 2; i < b.N; i++ {
-			topic := "topic-" + strconv.Itoa(i)
-			cli := "client-" + Client(strconv.Itoa(i))
-			hub.Subscribe(topic, cli)
-		}
-	}()
+}
+func Testfunc() {
+	// test Subscribe
+	for i := 0; i < 10; i++ {
+		topic := "topic-" + strconv.Itoa(i)
+		for i := 0; i < 100; i++ {
+			client := "client-" + strconv.Itoa(i)
+			Subscribe(topic, client)
 
-	wg.Wait()
-	fmt.Println(len(hub.Topics))
-	lendata := 0
-	for _, v := range hub.Topics {
-		lendata += len(v)
+		}
+
 	}
-	fmt.Println(len(hub.Topics))
+
+	for i := 0; i < 10; i++ {
+		topic := "topic-" + strconv.Itoa(i)
+		fmt.Println("start Publishe to all Subscriber in", topic)
+
+		Publishe(topic)
+	}
 
 }
