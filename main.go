@@ -16,7 +16,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	//if r.Header.Get("Origin")!="http://"+r.Host {http.Error(w,"Origin not allowed",-1);return}
 	fmt.Println("new client")
 
-	conn, err := websocket.Upgrade(w, r, w.Header(), 512, 512) //1024, 1024)
+	conn, err := websocket.Upgrade(w, r, w.Header(), 2, 2) //1024, 1024)
 	if err != nil {
 		http.Error(w, "Could not open websocket connection", 404)
 	}
@@ -25,7 +25,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 func echo(conn *websocket.Conn) {
 
-	// TODO use pubsub here
+	/* note: income data must be json as :
+		{
+			"event":"",
+			"msg":""
+		}
+	event must be subscribe, unsubscriber, close or msg
+	*/
 
 	for {
 
@@ -35,10 +41,17 @@ func echo(conn *websocket.Conn) {
 			conn.Close()
 			return
 		}
+
 		// un/subscribe if event == un/subscribe.
 		event := gjson.Get(string(msg), "event").String()
 		channel := gjson.Get(string(msg), "channel").String()
-		if event == "subscribe" {
+		data := gjson.Get(string(msg), "data").String()
+
+		if event == "message" {
+
+			Publishe(i, channel, []byte(data))
+
+		} else if event == "subscribe" {
 
 			fmt.Println("new subscriber")
 
@@ -51,13 +64,11 @@ func echo(conn *websocket.Conn) {
 			fmt.Println("unsubscriber")
 
 			msg = []byte("unsubscribe from " + channel + " success!")
-		} else {
-			Publishe(i, channel, msg)
 		}
 
 		fmt.Printf("message: %v\n", string(msg))
 
-		if err = conn.WriteMessage(i, msg); err != nil {
+		if err = conn.WriteMessage(i, []byte("done")); err != nil {
 			fmt.Println(err)
 		}
 	}

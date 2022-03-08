@@ -136,7 +136,11 @@ func Unsubscribe(topic string, client *websocket.Conn) {
 }
 
 func Publishe(i int, topic string, data []byte) {
-	clients, _ := c.Get(topic)
+	clients, found := c.Get(topic)
+	if found == false {
+		fmt.Println("no client to send data")
+		return
+	}
 	for c := range clients.(map[*websocket.Conn]bool) {
 
 		if err := c.WriteMessage(i, data); err != nil {
