@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/websocket"
 	"github.com/tidwall/gjson"
@@ -11,6 +12,8 @@ import (
 type msg struct {
 	Num int
 }
+
+var h Helper
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	//if r.Header.Get("Origin")!="http://"+r.Host {http.Error(w,"Origin not allowed",-1);return}
@@ -53,26 +56,27 @@ func echo(conn *websocket.Conn) {
 
 		} else if event == "subscribe" {
 
-			fmt.Println("new subscriber")
-
 			Subscribe(channel, conn)
 			msg = []byte("subscribe to " + channel + " success!")
 
 		} else if event == "unsubscribe" {
 
 			Unsubscribe(channel, conn)
-			fmt.Println("unsubscriber")
 
 			msg = []byte("unsubscribe from " + channel + " success!")
 		}
 
-		fmt.Printf("message: %v\n", string(msg))
+		fmt.Printf(string(msg))
 
+		mt.Lock()
 		if err = conn.WriteMessage(i, []byte("done")); err != nil {
 			fmt.Println(err)
 		}
+		mt.Unlock()
 	}
 }
+
+var mt sync.Mutex
 
 func main() {
 	http.HandleFunc("/ws", wsHandler)

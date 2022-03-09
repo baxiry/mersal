@@ -111,6 +111,10 @@ func (cache *Cache) Close() {
 //var c = cache.New()
 var c = NewCache()
 
+type Helper struct {
+	mt sync.Mutex
+}
+
 func Subscribe(topic string, client *websocket.Conn) {
 	clients, _ := c.Get(topic)
 	if clients == nil {
@@ -119,7 +123,6 @@ func Subscribe(topic string, client *websocket.Conn) {
 	clients.(map[*websocket.Conn]bool)[client] = true
 
 	c.Set(topic, clients)
-	fmt.Println(client)
 }
 
 func Unsubscribe(topic string, client *websocket.Conn) {
@@ -131,7 +134,6 @@ func Unsubscribe(topic string, client *websocket.Conn) {
 
 	delete(clients.(map[*websocket.Conn]bool), client)
 	c.Set(topic, clients)
-	fmt.Println(client)
 
 }
 
