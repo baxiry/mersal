@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"hub/hub"
 	"net/http"
 	"sync"
 
@@ -14,12 +14,11 @@ var mt sync.Mutex
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	//if r.Header.Get("Origin")!="http://"+r.Host {http.Error(w,"Origin not allowed",-1);return}
 
-	fmt.Println("new client")
 	conn, err := websocket.Upgrade(w, r, w.Header(), 2, 2) //1024, 1024)
 	if err != nil {
 		http.Error(w, "Could not open websocket connection", 404)
 	}
-	go serveMessages(conn)
+	go hub.ServeMessages(conn)
 }
 
 func main() {

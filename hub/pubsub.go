@@ -1,4 +1,4 @@
-package pubsub
+package hub
 
 import (
 	"fmt"
@@ -18,35 +18,11 @@ type item struct {
 	data interface{}
 }
 
-// New creates a new cache  ( that asynchronously cleans
-// expired entries after the given time passes.)
+// New creates a new cache
 func NewCache() *Cache {
 	cache := &Cache{
 		close: make(chan struct{}),
 	}
-
-	//go func() {
-	//ticker := time.NewTicker(cleaningInterval)
-	//defer ticker.Stop()
-
-	//for {
-	//select {
-	//	case <-ticker.C:
-	//now := time.Now().UnixNano()
-
-	//cache.items.Range(func(key, value interface{}) bool {
-	//item := value.(item)
-
-	//if item.expires > 0 && now > item.expires {	cache.items.Delete(key)}
-
-	//	return true
-	//})
-
-	//	case <-cache.close:
-	//	return
-	//	}
-	//}
-	//	}()
 
 	return cache
 }
@@ -60,10 +36,6 @@ func (cache *Cache) Get(key interface{}) (interface{}, bool) {
 	}
 
 	item := obj.(item)
-
-	//if item.expires > 0 && time.Now().UnixNano() > item.expires {
-	//	return nil, false
-	//}
 
 	return item.data, true
 }
@@ -84,10 +56,6 @@ func (cache *Cache) Range(f func(key, value interface{}) bool) {
 
 	fn := func(key, value interface{}) bool {
 		item := value.(item)
-
-		//if item.expires > 0 && now > item.expires {
-		//	return true
-		//}
 
 		return f(key, item.data)
 	}
@@ -111,10 +79,6 @@ func (cache *Cache) Close() {
 //var c = cache.New()
 var c = NewCache()
 
-type Helper struct {
-	mt sync.Mutex
-}
-
 func Subscribe(topic string, client *websocket.Conn) {
 	clients, _ := c.Get(topic)
 	if clients == nil {
@@ -137,7 +101,7 @@ func Unsubscribe(topic string, client *websocket.Conn) {
 
 }
 
-func Publishe(i int, topic string, data []byte) {
+func Publish(i int, topic string, data []byte) {
 	clients, found := c.Get(topic)
 	if found == false {
 		fmt.Println("no client to send data")
@@ -148,6 +112,5 @@ func Publishe(i int, topic string, data []byte) {
 		if err := c.WriteMessage(i, data); err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println("    data sent to ", c.LocalAddr())
 	}
 }

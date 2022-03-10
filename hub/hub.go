@@ -1,16 +1,18 @@
-package main
+package hub
 
 import (
 	"fmt"
-	"pubsub/pubsub"
+	"sync"
 
 	"github.com/gorilla/websocket"
 	"github.com/tidwall/gjson"
 )
 
+var mt sync.Mutex
+
 //note: income data must be json as `{"event":"","msg":""}`
 // event must be subscribe, unsubscriber, close or msg
-func serveMessages(conn *websocket.Conn) {
+func ServeMessages(conn *websocket.Conn) {
 
 	for {
 
@@ -22,29 +24,35 @@ func serveMessages(conn *websocket.Conn) {
 		}
 
 		// un/subscribe if event == un/subscribe.
-		event := gjson.Get(string(msg), "event").String()
-		channel := gjson.Get(string(msg), "channel").String()
-		data := gjson.Get(string(msg), "data").String()
+		var smsg = string(msg)
+		event := gjson.Get(smsg, "event").String()
+
+		if event == "" {
+			continue
+		}
+
+		channel := gjson.Get(smsg, "channel").String()
+		data := gjson.Get(smsg, "data").String()
 
 		if event == "message" {
 
-			pubsub.Publishe(i, channel, []byte(data))
+			Publish(i, channel, []byte(data))
 
 		} else if event == "subscribe" {
 
-			pubsub.Subscribe(channel, conn)
+			Subscribe(channel, conn)
 			msg = []byte("subscribe to " + channel + " success!")
 
 		} else if event == "unsubscribe" {
 
-			pubsub.Unsubscribe(channel, conn)
+			Unsubscribe(channel, conn)
 			msg = []byte("unsubscribe from " + channel + " success!")
 		}
 
 		fmt.Printf(string(msg))
 
 		mt.Lock()
-		if err = conn.WriteMessage(i, []byte("done")); err != nil {
+		if err = conn.WriteMessage(i, msg); err != nil {
 			fmt.Println(err)
 		}
 		mt.Unlock()

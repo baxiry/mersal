@@ -1,4 +1,4 @@
-module pubsub
+module hub 
 
 go 1.17
 
