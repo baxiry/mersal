@@ -1,4 +1,4 @@
-package main
+package pubsub
 
 import (
 	"fmt"
@@ -150,23 +150,4 @@ func Publishe(i int, topic string, data []byte) {
 		}
 		fmt.Println("    data sent to ", c.LocalAddr())
 	}
-}
-
-//CreateTopic create new topic from usersId.
-func CreateTopic(arg1, arg2 string) (res string) {
-
-	if len(arg1) > len(arg2) {
-		return arg1 + arg2
-	} else if len(arg1) > len(arg2) {
-		return arg2 + arg1
-	}
-
-	for i := 0; i < len(arg1); i++ {
-		if arg1[i] > arg2[i] {
-			res += string(arg1[i]) + string(arg2[i])
-		} else {
-			res += string(arg2[i]) + string(arg1[i])
-		}
-	}
-	return res
 }
