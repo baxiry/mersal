@@ -1,2 +1,2 @@
-# pubsub
-## publishe subscribe library for chat or any instant message application
+# mersal مرسال
+## Instant messaging server, easy to use as a server or as a library
