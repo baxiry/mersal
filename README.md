@@ -1,9 +1,5 @@
-<style> 
-.a1 {
-   color:yellow;
-   }
-</style>
-<div class=a1>
+
+<div style="color:yellow">
 
 # مرسال
 ## mersal
