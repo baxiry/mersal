@@ -1,11 +1,9 @@
 
-<div style="color:yellow">
-
-# *مرسال*
+<p style="text-align: center;"># *مرسال*</p>
 ## *mersal*
 ##### Instant messaging server, easy to use as a server or as a library
 
-</div>    
+   
 how to use ?
 
 create a websocket on browser and send message as json :
