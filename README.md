@@ -1,6 +1,7 @@
-#                               mersal مرسال
+#                                           *mersal* *مرسال* 
 ##### Instant messaging server, easy to use as a server or as a library
 
+   
 how to use ?
 
 create a websocket on browser and send message as json :
@@ -14,7 +15,8 @@ to subscribe in a topic (channel) send :
 ```
 event must be : ```subscribe```, ```unsubscribe```, ```message```,
 
-Later we will add events:  ```reseive```, and```seen``` in order to achieve  quality of service. "qos".
+Later we will add events:  ```reseive```, and```seen```,
+We will also work to achieve quality service ```qos``` later .
 
 to send message to channel/topic:
 ```json
