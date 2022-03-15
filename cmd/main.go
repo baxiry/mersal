@@ -1,12 +1,11 @@
 package main
 
 import (
-	"hub/hub"
+	"hub"
 	"net/http"
 	"sync"
 
 	"github.com/gorilla/websocket"
-	//"github.com/gorilla/websocket"
 )
 
 var mt sync.Mutex

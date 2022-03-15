@@ -26,11 +26,7 @@ func ServeMessages(conn *websocket.Conn) {
 		// un/subscribe if event == un/subscribe.
 		var smsg = string(msg)
 		event := gjson.Get(smsg, "event").String()
-
-		if event == "" {
-			continue
-		}
-
+		// TODO continue if no event.
 		channel := gjson.Get(smsg, "channel").String()
 		data := gjson.Get(smsg, "data").String()
 
@@ -49,7 +45,7 @@ func ServeMessages(conn *websocket.Conn) {
 			msg = []byte("unsubscribe from " + channel + " success!")
 		}
 
-		fmt.Printf(string(msg))
+		fmt.Println(string(msg))
 
 		mt.Lock()
 		if err = conn.WriteMessage(i, msg); err != nil {

@@ -2,7 +2,6 @@ package hub
 
 import (
 	"fmt"
-	"hub"
 	"strconv"
 	"testing"
 
@@ -22,7 +21,7 @@ func Testfunc() {
 	for i := 0; i < 10; i++ {
 		topic := "topic-" + strconv.Itoa(i)
 		for i := 0; i < 100; i++ {
-			hub.Subscribe(topic, conn)
+			Subscribe(topic, conn)
 
 		}
 
@@ -32,7 +31,7 @@ func Testfunc() {
 		topic := "topic-" + strconv.Itoa(i)
 		fmt.Println("start Publishe to all Subscriber in", topic)
 
-		hub.Publish(topic)
+		//Publish("topic", []byte("some data"))
 	}
 
 }
