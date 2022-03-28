@@ -15,37 +15,18 @@ func insertUser(user, email, pass string) error {
 	res, err := db.Exec(sql, user, email, pass)
 
 	if err != nil {
-		panic(err.Error())
+		fmt.Println("err is :\n ", err.Error())
+		return err
 	}
 
 	lastId, err := res.LastInsertId()
 
 	if err != nil {
 		fmt.Println(err)
+		return err
 	}
 
 	fmt.Printf("The last inserted row id: %d\n", lastId)
-	/*
-		insert, err := db.Exec(
-			"INSERT INTO mersal.users(username, email,  password ) VALUES ( ?, ?, ?)",
-			user, email, pass)
-
-		// if there is an error inserting, handle it
-		if err != nil {
-			fmt.Println("error is : \n", err)
-			return err
-		}
-		// be careful deferring Queries if you are using transactions
-		//defer insert.Close()
-
-		lastId, err := insert.LastInsertId()
-
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		fmt.Printf("The last inserted row id: %d\n", lastId)
-	*/
 	return nil
 }
 

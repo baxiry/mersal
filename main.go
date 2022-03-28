@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"mersal/im"
 	"net/http"
 	"sync"
 
+	"github.com/bashery/im"
 	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo-contrib/session"
