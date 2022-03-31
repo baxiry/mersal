@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"mersal/im"
 	"net/http"
 	"sync"
 
-	"github.com/bashery/im"
+	//"github.com/bashery/im"
 	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo-contrib/session"
@@ -16,6 +17,8 @@ var mt sync.Mutex
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	//if r.Header.Get("Origin")!="http://"+r.Host {http.Error(w,"Origin not allowed",-1);return}
+
+	// TODO Check Did the user log a session?
 
 	conn, err := websocket.Upgrade(w, r, w.Header(), 2, 2) //1024, 1024)
 	if err != nil {
