@@ -16,13 +16,12 @@ func ServeMessages(conn *websocket.Conn) {
 	fmt.Println("version 0.0.2")
 
 	for {
-		// mt.Lock() ??
-		// defer mt.Unlock() ??
 
 		i, msg, err := conn.ReadMessage()
 		if err != nil {
 			fmt.Println("Error reading message no.", i)
 			conn.Close()
+			// TODO remove connection from pub/sub/Cache
 			return
 		}
 
@@ -31,13 +30,11 @@ func ServeMessages(conn *websocket.Conn) {
 		event := gjson.Get(smsg, "event").String()
 		// TODO continue if no event.
 		channel := gjson.Get(smsg, "channel").String()
-		data := gjson.Get(smsg, "data").String()
 
 		// un/sub/pub According to the event.
 		if event == "message" {
-
-			mt.Lock() // what better way to fix data race ?
-			Publish(i, channel, []byte(data))
+			mt.Lock()
+			Publish(i, channel, gjson.Get(smsg, "data").String())
 			mt.Unlock()
 
 		} else if event == "subscribe" {
@@ -51,12 +48,13 @@ func ServeMessages(conn *websocket.Conn) {
 			msg = []byte("unsubscribe from " + channel + " success!")
 		}
 
-		fmt.Println(string(msg))
+		fmt.Println(smsg)
 
 		mt.Lock()
-		if err = conn.WriteMessage(i, msg); err != nil {
+		err = conn.WriteMessage(i, msg)
+		mt.Unlock()
+		if err != nil {
 			fmt.Println(err)
 		}
-		mt.Unlock()
 	}
 }
