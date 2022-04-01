@@ -90,7 +90,6 @@ func Subscribe(topic string, client *websocket.Conn) {
 }
 
 func Unsubscribe(topic string, client *websocket.Conn) {
-
 	clients, _ := c.Get(topic)
 	if clients == nil {
 		return
@@ -108,12 +107,9 @@ func Publish(i int, topic string, data []byte) {
 		return
 	}
 	for c := range clients.(map[*websocket.Conn]bool) {
-
-		if err := c.WriteMessage(i, data); err != nil {
+		err := c.WriteMessage(i, data)
+		if err != nil {
 			fmt.Println(err)
 		}
 	}
 }
-
-// TODO clear disactive connections
-func RemoveConn() {}
