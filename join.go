@@ -43,7 +43,8 @@ func signup(c echo.Context) error {
 		fmt.Println("\n\n\nerror is:", err)
 		return err // c.Render(200, "sign.html", "wrrone")
 	}
-	return c.String(http.StatusOK, "signup success") //c.Redirect(http.StatusSeeOther, "/login") // 303 code
+	// return c.Redirect(http.StatusSeeOther, "/login")
+	return c.String(http.StatusOK, "signup success")
 }
 
 // login if user info is correct
@@ -55,14 +56,12 @@ func login(c echo.Context) error {
 	if pass == fpass && femail == email {
 		//userSession[email] = username
 		setSession(c, username, userid)
-		return c.Redirect(http.StatusSeeOther, "/") // 303 code
-		// TODO redirect to latest page
-	}
+		//return c.Redirect(http.StatusSeeOther, "/") // 303 code
 
-	data := make(map[string]interface{}, 2)
-	data["userid"] = nil
-	data["error"] = "user information is not correct"
-	return c.Render(200, "login.html", data)
+		return c.String(200, "success!") // TODO redirect to latest page
+	}
+	//return c.Render(200, "login.html", data)
+	return c.String(200, "not success!")
 }
 
 func setSession(c echo.Context, username string, userid int) {
@@ -77,6 +76,7 @@ func setSession(c echo.Context, username string, userid int) {
 	sess.Save(c.Request(), c.Response())
 }
 
+// for web
 func signPage(c echo.Context) error {
 	data := make(map[string]interface{}, 1)
 	sess, _ := session.Get("session", c)
@@ -84,13 +84,4 @@ func signPage(c echo.Context) error {
 	data["username"] = sess.Values["username"]
 	return c.Render(200, "sign.html", data)
 	//fmt.Println( c.Render(200, "sign.html", sess.Values["userid"].(int))); return nil
-}
-
-func loginPage(c echo.Context) error {
-	data := make(map[string]interface{}, 1)
-	sess, _ := session.Get("session", c)
-	data["userid"] = sess.Values["userid"]
-	data["username"] = sess.Values["username"]
-	return c.Render(200, "login.html", data)
-	//fmt.Println( c.Render(200, "login.html", data)); return nil
 }
