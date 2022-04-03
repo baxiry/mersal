@@ -19,8 +19,8 @@ func main() {
 	db := setdb()
 	defer db.Close()
 	defer ssevent.Shutdown()
-
 	e := echo.New()
+
 	// middleware
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 
@@ -28,7 +28,7 @@ func main() {
 		for {
 			data = <-dataPipe
 			channel = gjson.Get(data, "channel").String()
-			msg := gjson.Get(data, "msg").String()
+			msg = gjson.Get(data, "msg").String()
 			ssevent.SendMessage("/events/"+channel, sse.SimpleMessage(msg))
 		}
 	}()
