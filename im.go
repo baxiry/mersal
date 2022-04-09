@@ -19,5 +19,6 @@ func pusher(c echo.Context) error {
 
 func messages(c echo.Context) error {
 	dataPipe <- c.FormValue("data")
+
 	return c.String(http.StatusOK, "ok")
 }

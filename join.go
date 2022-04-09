@@ -61,7 +61,7 @@ func login(c echo.Context) error {
 		return c.String(200, "success!") // TODO redirect to latest page
 	}
 	//return c.Render(200, "login.html", data)
-	return c.String(200, "not success!")
+	return c.String(404, "not success!")
 }
 
 func setSession(c echo.Context, username string, userid int) {

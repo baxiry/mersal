@@ -124,7 +124,7 @@ func getUsername(femail string) (int, string, string, string) {
 	var name, email, password string
 	var userid int
 	err := db.QueryRow(
-		"SELECT userid, username, email, password FROM comments.users WHERE email = ?",
+		"SELECT userid, username, email, password FROM mersal.users WHERE email = ?",
 		femail).Scan(&userid, &name, &email, &password)
 	if err != nil {
 		fmt.Println("no result or", err.Error())

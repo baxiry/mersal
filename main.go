@@ -34,7 +34,8 @@ func main() {
 	}()
 
 	// routers
-	e.Any("/events/:channel", pusher)
+	e.Any("/events/:channel", pusher) //  func(c echo.Context) error {ssevent.ServeHTTP(c.Response(), c.Request()) return nil}) //
+
 	e.POST("/", messages)
 	e.GET("/", home)
 	e.POST("/signup", signup)
