@@ -40,6 +40,7 @@ func main() {
 	e.GET("/", home)
 	e.POST("/signup", signup)
 	e.POST("/login", login)
+	e.POST("/putinfo", PutProfile)
 
 	e.Logger.Fatal(e.Start(":3000"))
 }

@@ -9,6 +9,55 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// PutProfile
+func PutProfile(c echo.Context) error {
+
+	username := c.FormValue("username")
+	id := c.FormValue("userid")
+	userid, err := strconv.Atoi(id)
+
+	if err != nil {
+		fmt.Println("A new error:", err)
+	}
+
+	fmt.Println("\n", username)
+
+	err = UpdateUserInfo(username, userid)
+	if err != nil {
+		fmt.Println("\n\n\nerror is:", err)
+		return err // c.Render(200, "sign.html", "wrrone")
+	}
+	// return c.Redirect(http.StatusSeeOther, "/login")
+	return c.String(http.StatusOK, "signup success")
+}
+
+// db
+func UpdateUserInfo(username string, userid int) (err error) {
+	// TODO chane price type.
+
+	//Update db
+	stmt, err := db.Prepare("update  mersal.users set  username=? where userid=?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	// execute
+	stmt.Exec(username, userid)
+	/*
+	   if err != nil {
+	       return err
+	   }
+
+	       a, err := res.RowsAffected()
+	       if err != nil {
+	           fmt.Println("error is: ", err)
+	           return err
+	       }
+	*/
+	return nil
+}
+
 // acount render profile of user. ok
 func acount(c echo.Context) error {
 	sess, _ := session.Get("session", c)
