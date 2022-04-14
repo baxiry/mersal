@@ -12,7 +12,8 @@ import (
 // PutProfile
 func PutProfile(c echo.Context) error {
 
-	username := c.FormValue("username")
+	data := c.FormValue("data")
+	colomn := c.FormValue("colomn")
 	id := c.FormValue("userid")
 	userid, err := strconv.Atoi(id)
 
@@ -20,9 +21,10 @@ func PutProfile(c echo.Context) error {
 		fmt.Println("A new error:", err)
 	}
 
-	fmt.Println("\n", username)
+	fmt.Println("data: ", data)
+	fmt.Println("colomn: ", colomn)
 
-	err = UpdateUserInfo(username, userid)
+	err = UpdateUserInfo(userid, colomn, data)
 	if err != nil {
 		fmt.Println("\n\n\nerror is:", err)
 		return err // c.Render(200, "sign.html", "wrrone")
@@ -31,19 +33,19 @@ func PutProfile(c echo.Context) error {
 	return c.String(http.StatusOK, "signup success")
 }
 
-// db
-func UpdateUserInfo(username string, userid int) (err error) {
+// UpdateUserInfo tacke int ass userid ande colomn for spicific colomn update
+func UpdateUserInfo(userid int, colomn, data string) (err error) {
 	// TODO chane price type.
 
 	//Update db
-	stmt, err := db.Prepare("update  mersal.users set  username=? where userid=?")
+	stmt, err := db.Prepare("update  mersal.users set  " + colomn + "=? where userid=?")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
 	// execute
-	stmt.Exec(username, userid)
+	stmt.Exec(data, userid)
 	/*
 	   if err != nil {
 	       return err
