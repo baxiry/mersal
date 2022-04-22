@@ -9,20 +9,25 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// PutProfile
+// PutProfile updates user info contorller
 func PutProfile(c echo.Context) error {
 
 	data := c.FormValue("data")
 	colomn := c.FormValue("colomn")
 	id := c.FormValue("userid")
+	fmt.Println("user id", id)
+
+	sess, err := session.Get("session", c)
+	fmt.Println("session userid: ", sess.Values["userid"])
+
 	userid, err := strconv.Atoi(id)
 
 	if err != nil {
 		fmt.Println("A new error:", err)
 	}
 
-	fmt.Println("data: ", data)
-	fmt.Println("colomn: ", colomn)
+	//fmt.Println("data: ", data)
+	//fmt.Println("colomn: ", colomn)
 
 	err = UpdateUserInfo(userid, colomn, data)
 	if err != nil {
@@ -47,15 +52,15 @@ func UpdateUserInfo(userid int, colomn, data string) (err error) {
 	// execute
 	stmt.Exec(data, userid)
 	/*
-	   if err != nil {
-	       return err
-	   }
+		   if err != nil {
+			   return err
+		   }
 
-	       a, err := res.RowsAffected()
-	       if err != nil {
-	           fmt.Println("error is: ", err)
-	           return err
-	       }
+		   a, err := res.RowsAffected()
+		   if err != nil {
+			   fmt.Println("error is: ", err)
+			   return err
+		   }
 	*/
 	return nil
 }

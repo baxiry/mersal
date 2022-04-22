@@ -49,15 +49,18 @@ func signup(c echo.Context) error {
 
 // login if user info is correct
 func login(c echo.Context) error {
+	fmt.Println("login")
+
 	femail := c.FormValue("email")
 	fpass := c.FormValue("password")
 	userid, username, email, pass := getUsername(femail)
 
-	if pass == fpass && femail == email {
-		//userSession[email] = username
-		setSession(c, username, userid)
-		//return c.Redirect(http.StatusSeeOther, "/") // 303 code
+	sess, _ := session.Get("session", c)
 
+	if pass == fpass && femail == email {
+		setSession(c, username, userid)
+		fmt.Println("sess userid is", sess.Values["userid"])
+		//return c.Redirect(http.StatusSeeOther, "/") // 303 code
 		return c.String(200, "success!") // TODO redirect to latest page
 	}
 	//return c.Render(200, "login.html", data)
