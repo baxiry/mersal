@@ -8,11 +8,11 @@ import (
 
 var (
 	dataPipe = make(chan string, 1)
-	channel  string
-	msg      string
 )
 
 func pusher(c echo.Context) error {
+
+	//mut.Lock(); defer mut.Unlock()
 	ssevent.ServeHTTP(c.Response(), c.Request())
 	return nil
 }

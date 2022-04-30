@@ -12,7 +12,6 @@ import (
 
 var (
 	ssevent = sse.NewServer(&sse.Options{}) // pass nil to show default Options
-	data    string
 )
 
 func main() {
@@ -26,9 +25,9 @@ func main() {
 
 	go func() {
 		for {
-			data = <-dataPipe
-			channel = gjson.Get(data, "channel").String()
-			msg = gjson.Get(data, "msg").String()
+			data := <-dataPipe
+			channel := gjson.Get(data, "channel").String()
+			msg := gjson.Get(data, "msg").String()
 			ssevent.SendMessage("/events/"+channel, sse.SimpleMessage(msg))
 		}
 	}()
