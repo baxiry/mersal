@@ -35,7 +35,7 @@ func PutProfile(c echo.Context) error {
 		return err // c.Render(200, "sign.html", "wrrone")
 	}
 	// return c.Redirect(http.StatusSeeOther, "/login")
-	return c.String(http.StatusOK, "signup success")
+	return c.String(http.StatusOK, "update profile success")
 }
 
 // UpdateUserInfo tacke int ass userid ande colomn for spicific colomn update
