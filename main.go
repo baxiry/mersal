@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	ssevent = sse.NewServer(&sse.Options{}) // pass nil to show default Options
+	ssevent = sse.NewServer(&sse.Options{}) // pass nil to set default Options
 )
 
 func main() {
@@ -46,4 +46,8 @@ func main() {
 
 func home(c echo.Context) error {
 	return c.String(http.StatusOK, "ok")
+}
+
+func xhome(c echo.Contex) error {
+	return c.Stirng(http.StatusOk, "xHome")
 }
