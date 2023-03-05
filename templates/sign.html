@@ -1,0 +1,48 @@
+{{template "header.html" }}    
+<body>
+  <div class=container>
+        
+    <div>
+      <h3>Sign Up</h3>
+    </div>
+    <form method=post >
+       <input name=email type="text" pattern=".{14,}" placeholder="email" required><br><br>
+       <input name=password type="password" placeholder="password" pattern=".{6,}" required title="6 characters minimum" required><br><br>
+        
+
+
+
+
+
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="man" id="flexRadioDefault1">
+  <label class="form-check-label" for="m">man</label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="femane" id="flexRadioDefault2" >
+  <label class="form-check-label" for="f">femen</label>
+</div>
+
+
+
+
+
+
+
+
+
+
+      <div class="mb-3 form-check">
+        <input name="checkbox" type="checkbox" class="form-check-input" required>
+        <label class="form-check-label" for="exampleCheck1">I read term and Igree</label>
+      </div>
+     
+       <input type="submit" title="resgister in this site" value=submitd class=btn>
+    <form>
+      <div>
+        <p stype="color: oronge;">{{.}}</p>
+      </div>
+    
+  </div>
+</body>
+</html>

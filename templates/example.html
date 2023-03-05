@@ -1,0 +1,59 @@
+{{template "header.html" .}}
+<body>
+    <div class="container">
+
+        <h1>example page</h1>
+
+        <h1>{{.username}}</h1>
+        <h1>{{.userid}}</h1>
+        <h2>Stores page</h2>
+
+
+
+
+
+        <h3>update acount information </h3>
+
+        <img src="/fs/{{.linkavatar}}" >
+        <form action="/upacount" method=post><br><br>
+            <input type="name" name=name value={{.username}}><br><br>
+            <input type="email" name=email value={{.email}}><br><br>
+            <input type="phon" name=phon value={{.phon}}><br><br>
+            <!--<input type="file" name=files value={{.linkavatar}}>-->
+            <input type="submit">
+        </form>
+
+    
+        <h1>My Products</h1>    
+    
+        <h2>{{.username}}</h2>    
+
+    
+    {{if not .products }} you dont have any product yet {{end}}
+
+    {{range .products}}
+
+    <div class="m-5">
+    <div id="id{{.ProductId}}" class=card>
+
+    <div class="m-5">
+        <h5>{{.Catigory}}</h5>
+        <h5>{{.Title}}</h5>
+        <h5>{{.Photo}}</h5>
+        <h5>{{.Price}}</h5>
+        <h5>{{.Description}}</h5>
+
+        <div dir=rtl>
+            <button onclick=deleteProd({{.ProductId}})> Delete </button>
+            <button onclick=editeProd({{.ProductId}})> Edit </button>
+            <button onclick=editeFotos({{.ProductId}})> Edit Photos </button>
+        </div>
+    </div>
+    </div>
+    </div>
+    {{end}}
+
+
+    </div>
+</body>
+</html>

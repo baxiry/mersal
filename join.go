@@ -2,89 +2,109 @@ package main
 
 import (
 	"fmt"
+	"meet/auth"
 	"net/http"
 
-"github.com/gorilla/sessions"
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
 
-func insertUser(user, email, pass string) error {
-	sql := `INSERT INTO mersal.users(username, email, password) VALUES (?,?,?)`
+// signup sing up new user handler
+func Signup(c echo.Context) error {
 
-	res, err := db.Exec(sql, user, email, pass)
+	email := c.FormValue("email")
+	pass := c.FormValue("password")
+	m := c.FormValue("man")
+	f := c.FormValue("femane")
 
-	if err != nil {
-		fmt.Println("err is :\n ", err.Error())
-		return err
+	gender := ""
+	if m == "on" {
+		gender = "m"
+	}
+	if f == "on" {
+		gender = "f"
 	}
 
-	lastId, err := res.LastInsertId()
-
+	err := insertUser(email, pass, gender)
 	if err != nil {
 		fmt.Println(err)
+		return c.Render(200, "sign.html", err.Error())
+	}
+	return c.Redirect(http.StatusSeeOther, "/login") // 303 code
+}
+
+// insertUser register new user in db
+func insertUser(email, pass, gender string) error {
+
+	sts := "INSERT INTO users(email, password, gender) VALUES ( ?, ?, ?)"
+	_, err := db.Exec(sts, email, pass, gender)
+
+	// if there is an error inserting, handle it
+	if err != nil {
 		return err
 	}
-
-	fmt.Printf("The last inserted row id: %d\n", lastId)
+	// be careful deferring Queries if you are using transactions
 	return nil
 }
 
-// signup
-func signup(c echo.Context) error {
-
-	username := c.FormValue("username")
-	email := c.FormValue("email")
-	password := c.FormValue("password")
-
-	fmt.Println("\n\n\n", username, password, email)
-	err = insertUser(username, email, password)
-	if err != nil {
-		fmt.Println("\n\n\nerror is:", err)
-		return err // c.Render(200, "sign.html", "wrrone")
-	}
-	// return c.Redirect(http.StatusSeeOther, "/login")
-	return c.String(http.StatusOK, "signup success")
-}
-
-// login if user info is correct
-func login(c echo.Context) error {
-	fmt.Println("login")
-
+func Login(c echo.Context) error {
 	femail := c.FormValue("email")
 	fpass := c.FormValue("password")
-	userid, username, email, pass := getUsername(femail)
+	userid, username, pass := selectUser(femail)
+	fmt.Println("login with ", userid, username, pass)
 
-	sess, _ := session.Get("session", c)
-
-	if pass == fpass && femail == email {
-		setSession(c, username, userid)
-		fmt.Println("sess userid is", sess.Values["userid"])
-		//return c.Redirect(http.StatusSeeOther, "/") // 303 code
-		return c.String(200, "success!") // TODO redirect to latest page
+	if pass == fpass && pass != "" {
+		//userSession[email] = name
+		//auth.NewSession(c, username, userid)
+		auth.NewSession(c, userid)
+		return c.Redirect(http.StatusSeeOther, "/") // 303 code
+		// TODO redirect to latest page
 	}
-	//return c.Render(200, "login.html", data)
-	return c.String(404, "not success!")
+	// TODO flush this message
+
+	data := make(map[string]interface{}, 2)
+	data["username"] = username
+	data["userid"] = userid
+	data["message"] = "username or pass is wrong!"
+
+	fmt.Println(c.Render(200, "login.html", data))
+	return nil
 }
 
-func setSession(c echo.Context, username string, userid int) {
-	sess, _ := session.Get("session", c)
-	sess.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   60 * 60, // = 1h,
-		HttpOnly: true,    // no websocket or any thing else
+// select User info
+func selectUser(femail string) (int, string, string) {
+	var username, password string
+	var userid int
+	err := db.QueryRow(
+		"SELECT userid, username, password FROM users WHERE email = ?",
+		femail).Scan(&userid, &username, &password)
+	if err != nil {
+		fmt.Println("selet user ERROR: ", err.Error())
+		return -1, "", ""
 	}
-	sess.Values["username"] = username
-	sess.Values["userid"] = userid
-	sess.Save(c.Request(), c.Response())
+	return userid, username, password
 }
 
-// for web
-func signPage(c echo.Context) error {
-	data := make(map[string]interface{}, 1)
-	sess, _ := session.Get("session", c)
-	data["userid"] = sess.Values["userid"]
-	data["username"] = sess.Values["username"]
+func SignPage(c echo.Context) error {
+	username, userid, err := auth.GetSession(c)
+	if err != nil {
+		fmt.Println("LoginPage error is : ", err)
+	}
+	data := make(map[string]interface{}, 2)
+	data["username"] = username
+	data["userid"] = userid
+
 	return c.Render(200, "sign.html", data)
-	//fmt.Println( c.Render(200, "sign.html", sess.Values["userid"].(int))); return nil
+}
+
+func LoginPage(c echo.Context) error {
+	username, userid, err := auth.GetSession(c)
+	if err != nil {
+		fmt.Println("LoginPage error is : ", err)
+	}
+	data := make(map[string]interface{}, 2)
+	data["username"] = username
+	data["userid"] = userid
+
+	fmt.Println(c.Render(200, "login.html", data))
+	return nil
 }

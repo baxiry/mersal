@@ -1,0 +1,42 @@
+<!-- user profile -->
+{{template "header.html" .}}
+<body>
+<div class='container'>
+
+<div class="row">
+
+
+<div class="col p-2 m-2 border border-2">
+    <div  style="background-color: rgba(200, 200, 200, 200);">
+        {{if eq .user.Photos "" }}
+            <h1> no photo </h1>  
+        <a href="/fotos">upload photo</a>
+        {{else}}
+        <img src="/fs/{{.user.Photos}}" class="col-5 h-100 d-inline-block" >
+        {{end}}
+
+    </div>
+</div>
+
+
+
+   <div class="col container">
+
+
+        username &ensp;<b>{{.user.Username}}</b><br>
+        country  &emsp; <b>{{.user.Contry}} </b><br>
+        email &ensp;&emsp;&emsp;<b>{{.user.Email}}   </b><br>
+        age   &emsp;&emsp;&emsp;<b>{{.user.Age}}     </b><br>
+        Profession  &emsp;&emsp;<b>{{.user.Profess}}     </b><br>
+        about &emsp;&emsp;<b>{{.user.Descript}}</b><br>
+        gen   &emsp;&emsp;<b>{{.user.Gender}}</b><br>
+    
+         photo   &emsp;&emsp; {{.user.Photos}}
+
+  </div>
+</div>
+
+</div>
+</div>
+
+</body>

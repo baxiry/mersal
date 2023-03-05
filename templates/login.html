@@ -1,0 +1,25 @@
+{{template "header.html" .}}
+<body>
+  
+<div class="container">
+  <!-- Content here -->
+<h1>Log in</h1>
+<form method=post action=/login>
+  
+  <div class="mb-3">
+    <input name=email type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+  <div class="mb-3">
+    <input name=password type="password" class="form-control" id="exampleInputPassword1">
+  </div>
+ 
+  <button type="submit" value=submit class="btn btn-primary" >Submit</button>
+
+   <!--  <button type="submit" disabled={!name || !text || text.length < 20 || submitting}>  -->
+    <h4>{{.}}</h4>
+</form>
+<h4 style="color:grey;">or sign up from here</h4>
+</div>
+</body>
+</html>

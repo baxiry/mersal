@@ -1,0 +1,14 @@
+{{template "header.html" .}}
+<body>
+<div>
+   <br>
+   <br>
+
+   <h1>user id :  {{ .userid }}</h1>
+   <form action="/upfotos/{{.userid}}" method="post" enctype="multipart/form-data">
+      <p>photos:</p> <input type="file" name="files" multiple><br><br>
+      <input type="submit" value="Submit">
+   </form>
+</div>
+</body>
+</html>

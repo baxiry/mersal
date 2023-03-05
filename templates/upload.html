@@ -1,0 +1,29 @@
+{{template "header.html" .}}
+<body>
+<div class=container>
+    <br>
+    <br>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <p>title:</p>
+        <input type="text" name=title placeholder="title"><br><br>
+        <p:>catigory: </p>
+        <select name="catigory">
+            <option value="computers">computers</option>
+            <option value="mobiles">mobiles</option>
+            <option value="motors">motors</option>
+            <option value="animals">animals</option>
+            <option value="cars">cars</option>
+            <option value="services">services</option>
+            <option value="others">others</option>
+        </select><br><br>
+
+        <p>Ditails:</p>
+        <textarea name="description" onkeyup="this.value.length == 200 ? alert('stop') : null;" title="write all details" placeholder="description"></textarea><br><br>
+        <p>Price:</p>
+        <input type="number" name=price placeholder="price"><br><br>
+        <p>photos:</p> <input type="file" name="files" multiple><br><br>
+        <input type="submit" value="Submit" >
+    </form>
+</div>
+</body>
+</html>

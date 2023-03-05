@@ -1,0 +1,27 @@
+<!-- header is head and navbar -->
+{{template "header.html" .}}
+<body>
+<div class="container">
+<div class="p-5"><h2>Home page</h2></div> 
+  <div class="row justify-content-evenly">
+{{range .users}}
+    <div class="col-lg-3 col-md-4">
+    <a href="/user/{{.Id}}" >
+    <div class="card shadow-sm h-75">
+        <img src="/fs/{{.Photos}}" class="card-img-top" alt="">
+      <div class="card-body">
+        <h3 class="card-title">{{.Username}}</h3>
+        <p class="card-text">{{.Id}}</p>
+      </div>
+    </div>
+    </a>
+  </div>
+{{end}}
+  </div>
+
+
+</div>
+<footer>
+</footer>
+</body>
+</html>
