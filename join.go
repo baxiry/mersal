@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"meet/auth"
+	"mersal/auth"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -13,18 +13,8 @@ func Signup(c echo.Context) error {
 
 	email := c.FormValue("email")
 	pass := c.FormValue("password")
-	m := c.FormValue("man")
-	f := c.FormValue("femane")
 
-	gender := ""
-	if m == "on" {
-		gender = "m"
-	}
-	if f == "on" {
-		gender = "f"
-	}
-
-	err := insertUser(email, pass, gender)
+	err := insertUser(email, pass)
 	if err != nil {
 		fmt.Println(err)
 		return c.Render(200, "sign.html", err.Error())
@@ -33,10 +23,10 @@ func Signup(c echo.Context) error {
 }
 
 // insertUser register new user in db
-func insertUser(email, pass, gender string) error {
+func insertUser(email, pass string) error {
 
-	sts := "INSERT INTO users(email, password, gender) VALUES ( ?, ?, ?)"
-	_, err := db.Exec(sts, email, pass, gender)
+	sts := "INSERT INTO mersal.users(email, password) VALUES ( ?, ?)"
+	_, err := db.Exec(sts, email, pass)
 
 	// if there is an error inserting, handle it
 	if err != nil {

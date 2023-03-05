@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"meet/auth"
+	"mersal/auth"
 	"net/http"
 	"strconv"
 

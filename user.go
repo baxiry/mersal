@@ -29,40 +29,13 @@ func PutProfile(c echo.Context) error {
 	//fmt.Println("data: ", data)
 	//fmt.Println("colomn: ", colomn)
 
-	err = UpdateUserInfo(userid, colomn, data)
+	err = updateUserInfo(data, colomn, userid)
 	if err != nil {
 		fmt.Println("\n\n\nerror is:", err)
 		return err // c.Render(200, "sign.html", "wrrone")
 	}
 	// return c.Redirect(http.StatusSeeOther, "/login")
 	return c.String(http.StatusOK, "update profile success")
-}
-
-// UpdateUserInfo tacke int ass userid ande colomn for spicific colomn update
-func UpdateUserInfo(userid int, colomn, data string) (err error) {
-	// TODO chane price type.
-
-	//Update db
-	stmt, err := db.Prepare("update  mersal.users set  " + colomn + "=? where userid=?")
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	// execute
-	stmt.Exec(data, userid)
-	/*
-		   if err != nil {
-			   return err
-		   }
-
-		   a, err := res.RowsAffected()
-		   if err != nil {
-			   fmt.Println("error is: ", err)
-			   return err
-		   }
-	*/
-	return nil
 }
 
 // acount render profile of user. ok
@@ -98,8 +71,8 @@ func updateAcountInfo(c echo.Context) error {
 		fmt.Println("error at update db function", err)
 	}
 
-	// update session information
-	setSession(c, username, uid.(int))
+	// TODO update session information
+	// TODO	setSession(c, username, uid.(int))
 
 	// redirect to acoun page
 	userid := strconv.Itoa(uid.(int))
@@ -122,7 +95,7 @@ func updateAcount(c echo.Context) error {
 		return c.Redirect(http.StatusSeeOther, "/login") // 303 code
 	}
 
-	data["username"], data["email"], data["linkavatar"] = getUserInfo(userid.(int))
+	data["username"], data["email"], data["linkavatar"] = GetUserInfo(userid.(int))
 
 	data["userid"] = userid
 
@@ -131,7 +104,6 @@ func updateAcount(c echo.Context) error {
 	return c.Render(200, "upacount.html", data)
 }
 
-//
 func getUser(c echo.Context) error {
 	// User ID from path `users/:id`
 	id := c.Param("id")
@@ -141,7 +113,7 @@ func getUser(c echo.Context) error {
 func updateUserInfo(name, email string, uid int) error {
 
 	//Update db
-	stmt, err := db.Prepare("update  comments.users set username=?, email=? where id=?")
+	stmt, err := db.Prepare("update comments.users set username=?, email=? where id=?")
 	if err != nil {
 		return err
 	}
@@ -162,11 +134,36 @@ func updateUserInfo(name, email string, uid int) error {
 	return nil
 }
 
+/*
+// getUserInfo select * by Id
+func getUserInfo(userid int) (user User) {
+
+	rows, err := db.Query("SELECT * FROM users WHERE userid = ?", userid)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	defer rows.Close()
+
+	err = scan.Row(&user, rows)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	photo := strings.Split(user.Photos, "; ")
+	user.Photos = photo[0]
+
+	return user
+}
+*/
+
 // gets all user information for update this info
-func getUserInfo(userid int) (string, string, string) {
+func GetUserInfo(userid int) (string, string, string) {
 	var name, email, avatar string
 	err := db.QueryRow(
-		"SELECT username, email, linkavatar FROM comments.users WHERE userid = ?",
+		"SELECT username, email, linkavatar FROM mersal.users WHERE userid = ?",
 		userid).Scan(&name, &email, &avatar)
 	if err != nil {
 		fmt.Println("no result or", err.Error())
@@ -187,3 +184,21 @@ func getUsername(femail string) (int, string, string, string) {
 	}
 	return userid, name, email, password
 }
+
+/*
+// UpdateUserInfo tacke int ass userid ande colomn for spicific colomn update
+func UpdateUserInfo(userid int, colomn, data string) (err error) {
+	// TODO chane price type.
+
+	//Update db
+	stmt, err := db.Prepare("update  mersal.users set  " + colomn + "=? where userid=?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	// execute
+	stmt.Exec(data, userid)
+	return nil
+}
+*/

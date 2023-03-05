@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"meet/auth"
-	"meet/helps"
+	"mersal/auth"
+	"mersal/helps"
 	"net/http"
 	"os"
 	"strings"

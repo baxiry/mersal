@@ -1,11 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/gorilla/sessions"
-	"github.com/gorilla/websocket"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
@@ -45,24 +41,6 @@ func main() {
 
 	//e.GET("/:catigory/:id", getOneProd) // whech is beter ? :catigory or /product ?
 
-	// chat app
-
-	fmt.Println("version 0.0.2\nim start at :8080")
-
-	http.HandleFunc("/ws", wsHandler)
-
-	go panic(http.ListenAndServe(":8080", nil))
-
 	e.Logger.Fatal(e.Start(":8080"))
 
-}
-
-func wsHandler(w http.ResponseWriter, r *http.Request) {
-	//if r.Header.Get("Origin")!="http://"+r.Host {http.Error(w,"Origin not allowed",-1);return}
-
-	conn, err := websocket.Upgrade(w, r, w.Header(), 1024, 1024)
-	if err != nil {
-		http.Error(w, "Could not open websocket connection", 404)
-	}
-	go im.ServeMessages(conn)
 }

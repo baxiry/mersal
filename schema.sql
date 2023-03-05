@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS social.users (
     password varchar(255) NOT NULL ,
     age      int
     email    varchar(255) UNIQUE NOT NULL,
-    gender   varchar(255) NOT NULL,
     marital  VARCHAR(255)
     photos   text NOT NULL DEFAULT "",
     number_photos int NOT NULL DEFAULT 0,
