@@ -10,16 +10,21 @@ import (
 
 // GetSession return username & userid as session's user
 func GetSession(c echo.Context) (string, int, error) {
-	sess, _ := session.Get("session", c)
+	sess, err := session.Get("session", c)
+	if err != nil {
+		fmt.Println("session.Get err")
+		panic(err)
+	}
 	if sess.Values["userid"] == nil {
 		return "", -1, fmt.Errorf("no session")
 	}
+	fmt.Println("GetSession OK")
 	return sess.Values["username"].(string), sess.Values["userid"].(int), nil
 	//return sess.Values["userid"].(int), nil
 }
 
 // newSession creates new session
-func NewSession(c echo.Context, userid int) {
+func NewSession(c echo.Context, username string, userid int) {
 	sess, _ := session.Get("session", c)
 	sess.Options = &sessions.Options{
 		Path:     "/",
@@ -28,5 +33,9 @@ func NewSession(c echo.Context, userid int) {
 	}
 	// sess.Values["username"] = username
 	sess.Values["userid"] = userid
+	sess.Values["username"] = username
+
 	sess.Save(c.Request(), c.Response())
+
+	fmt.Println("NewSession OK")
 }

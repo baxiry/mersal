@@ -6,7 +6,6 @@ import (
 	"mersal/helps"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/blockloop/scan"
 	"github.com/labstack/echo/v4"
@@ -30,7 +29,7 @@ type User struct {
 
 // getCatigories get all photo name of catigories.
 func getRecentUsers() (users []User) {
-	rows, err := db.Query("SELECT Id, Username, Email, Photos, Gender from social.users;")
+	rows, err := db.Query("SELECT Id, Username, Email, Photos from mersal.users;")
 	defer rows.Close()
 	err = scan.Rows(&users, rows)
 	if err != nil {
@@ -45,27 +44,28 @@ func getRecentUsers() (users []User) {
 func HomePage(c echo.Context) error {
 
 	username, userid, err := auth.GetSession(c)
-
 	helps.PrintError("get session", err)
-	println("userid is ", userid)
-	println("username is ", username)
+
+	println("id & username ", userid, username)
 
 	data := make(map[string]interface{}, 3)
 	data["username"] = username
 	data["userid"] = userid
-	users := getRecentUsers()
+
+	// TODO add home activites here
+	//users := getRecentUsers()
 
 	//	fmt.Print("profile info", ProfileInfo(userid), "\n\n")
-	for i := range users {
-		photos := strings.Split(users[i].Photos, "; ")
-		users[i].Photos = SetAvatar(users[i].Gender, photos[0])
-		fmt.Println(users[i].Photos)
-	}
+	//for _ = range users {
+	//photos := strings.Split(users[i].Photos, "; ")
+	//users[i].Photos = SetAvatar(users[i].Gender, photos[0])
+	//fmt.Println(users[i].Photos)
+	//	}
 
-	data["users"] = users
+	//data["users"] = users
 	//data["user"] = ProfileInfo(userid)
-	fmt.Println(c.Render(http.StatusOK, "home.html", data))
-	return nil
+
+	return c.Render(http.StatusOK, "home.html", data)
 }
 
 // get Profile with all info

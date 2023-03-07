@@ -7,21 +7,24 @@ import (
 	"io"
 	"os"
 
-	_ "github.com/go-sql-driver/mysql"
-
 	"github.com/labstack/echo/v4"
+	_ "github.com/mattn/go-sqlite3"
+)
+
+const (
+	AppName = "social"
+	DBName  = "mersal"
+	//TableName = "users"
 )
 
 var (
-	AppName   = "social"
-	TableName = "users"
-	db        *sql.DB
+	db *sql.DB
 )
 
 // init database
 func ConnectDB() *sql.DB {
-
-	db, err := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/?charset=utf8&parseTime=True&loc=Local")
+	// sql.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/?charset=utf8&parseTime=True&loc=Local")
+	db, err := sql.Open("sqlite3", "mersal.db")
 
 	if err != nil { // why no error when db is not runinig ??
 		fmt.Println("run mysql server", err)
@@ -113,7 +116,15 @@ func Assets() string {
 
 // CREATE DATABASE (not with sqlite);
 func CreateDB(dbName string, db *sql.DB) {
-	_, err := db.Exec("CREATE DATABASE IF NOT EXISTS " + dbName + ";")
+	_, err := db.Exec("CREATE DATABASE IF NOT EXISTS " + DBName + ";")
+	if err != nil {
+		panic(err)
+	}
+}
+
+// CREATE DATABASE (not with sqlite);
+func CreateTable(tableName string, db *sql.DB) {
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS " + tableName + ";")
 	if err != nil {
 		panic(err)
 	}

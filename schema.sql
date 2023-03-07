@@ -1,19 +1,14 @@
 
-CREATE DATABASE IF NOT EXISTS social;
+CREATE DATABASE IF NOT EXISTS mersal;
 
-
-CREATE TABLE IF NOT EXISTS social.users (
-    userid int unsigned NOT NULL AUTO_INCREMENT,
-    username varchar(255) NOT NULL DEFAULT "",
-    password varchar(255) NOT NULL ,
-    age      int
-    email    varchar(255) UNIQUE NOT NULL,
-    marital  VARCHAR(255)
-    photos   text NOT NULL DEFAULT "",
-    number_photos int NOT NULL DEFAULT 0,
-    PRIMARY KEY (userid)
+-- sqlite
+CREATE TABLE IF NOT EXISTS users (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     username varchar(64) NOT NULL DEFAULT "",
+     email    varchar(128) UNIQUE NOT NULL,
+     password varchar(64) NOT NULL ,
+     photos   text NOT NULL DEFAULT ""
 );
-
 
 -- UPDATE EXAMPLE
 -- UPDATE  users set gender = 'f' where userid = 1 ;
