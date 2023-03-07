@@ -68,7 +68,7 @@ func selectUser(femail string) (int, string, string) {
 		"SELECT id, username, password FROM users WHERE email = ?",
 		femail).Scan(&userid, &username, &password)
 	if err != nil {
-		fmt.Println("selet user ERROR: ", err.Error())
+		fmt.Println("select user ERROR: ", err.Error())
 		return -1, "", ""
 	}
 	return userid, username, password
@@ -77,7 +77,7 @@ func selectUser(femail string) (int, string, string) {
 func SignPage(c echo.Context) error {
 	username, userid, err := auth.GetSession(c)
 	if err != nil {
-		fmt.Println("LoginPage error is : ", err)
+		fmt.Println("SignPage error is : ", err)
 	}
 	data := make(map[string]interface{}, 2)
 	data["username"] = username

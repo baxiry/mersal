@@ -3,33 +3,11 @@
 <div class=container>
 
     <form action=/upacount method=post >
-        <p>Profile Up</p>
-
+        <p> Update Profile</p>
         username: 
         <input type=text name=username placeholder=username value={{.user.Username}}><br><br>
-        age :
         
-        <input type=number name=age placeholder=age value={{if ne .user.Age 0}}{{.user.Age}}{{end}}><br><br>
-        
-        profess:
-        <input type="text" name=profess placeholder=profess value={{.user.Profess}}><br><br>
-        
-        Ditails:
-        <textarea name="descript" title="write all details" placeholder="description" >{{.user.Descript}}</textarea><br><br>
-        
-        contry:
-        <select name="contry">
-            {{$contry := .user.Contry}}
-            <option value=arabia   {{if eq $contry "arabia"}} selected {{end}}>arabia</option>
-            <option value=england  {{if eq $contry "england"}} selected {{end}}>englend</option>
-            <option value=malawi   {{if eq $contry "malawi"}} selected {{end}}>malawi</option>
-            <option value=eropa    {{if eq $contry "eropa"}} selected {{end}}>eropa</option>
-            <option value=endia    {{if eq $contry "endia"}} selected {{end}}>india</option>
-            <option value=china    {{if eq $contry "china"}} selected {{end}}>chaina</option>
-            <option value=usa      {{if eq $contry "usa"}} selected {{end}}>usa</option> 
-        </select> <br><br>
-        <input type=submit value=Submit>
-        <a href="http://localhost:8080/user/{{.user.UserId}}"> Cancel </a>
+        <a href="http://localhost:8080/user/{{.user.Id}}"> Cancel </a>
 
     </form>
 </div>
